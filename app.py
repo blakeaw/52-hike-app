@@ -67,6 +67,9 @@ with st.sidebar:
     if st.button("Load Data"):
         try:
             df_hike = load_gsheet(sheet_share)
+            if 'Hike #' not in df_hike.columns:
+                hike_num = np.arange(len(df_hike)) + 1
+                df_hike['Hike #'] = hike_num
             st.session_state.is_loaded = True
             st.session_state.df_hike = df_hike            
         except:
@@ -146,12 +149,27 @@ if st.session_state.is_loaded:
                 'Calories', 
                 'Active Zone Minutes']
     for y in expanded:
-        with st.expander(y):
-            bar_stats(st, df_hike, x, y)
+        if y in df_hike.columns:
+            with st.expander(y):
+                bar_stats(st, df_hike, x, y)
 
-    with st.expander('Pair plot - Difficulty'):
-        figp1 = sns.pairplot(df_hike.loc[:, 'Distance (mi)':], hue='AllTrails Rating')
-        st.pyplot(figp1)
-    with st.expander('Pair plot - Season'):
-        figp2 = sns.pairplot(df_hike.loc[:, 'Distance (mi)':], hue='Season')
-        st.pyplot(figp2)        
+    cols_need = pd.Series(['Distance (mi)', 'Duration (minutes)', 'AllTrails Rating', 'Elevation Gain (ft)'])
+    if cols_need.isin(df_hike.columns).all():
+        with st.expander('Relplot - Duration vs. Distance - Rating and Elevation Gain'):
+            #figp1 = sns.pairplot(df_hike.loc[:, 'Distance (mi)':], hue='AllTrails Rating')
+            figp1 = sns.relplot(x='Distance (mi)', y='Duration (minutes)',
+                                hue='AllTrails Rating', size='Elevation Gain (ft)',
+                                alpha=0.5, palette="colorblind", data=df_hike)
+            st.pyplot(figp1)
+    
+    cols_need = pd.Series(['Distance (mi)', 'Duration (minutes)', 'Season', 'Calories'])
+    if cols_need.isin(df_hike.columns).all():            
+        with st.expander('Relplot - Duration vs. Distance - Season and Calories'):
+            #figp2 = sns.pairplot(df_hike.loc[:, 'Distance (mi)':], hue='Season')
+            figp2 = sns.relplot(x='Distance (mi)', y='Duration (minutes)',
+                        hue='Season', size='Calories',
+                        alpha=0.5, palette="colorblind", data=df_hike)
+            st.pyplot(figp2) 
+    # with st.expander("Season Breakdown"):
+    #     figp3 = sns.catplot(data=df_hike, y="Season", color='slategrey', kind='bar')       
+    #     st.pyplot(figp3)    
