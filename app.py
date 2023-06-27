@@ -4,6 +4,13 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import seaborn as sns
 
+st.set_page_config(page_title='52 Hike App',
+                   page_icon=':hiking_boot:',
+                   initial_sidebar_state="expanded",
+                    menu_items={
+                        'Report a Bug': "https://github.com/blakeaw/52-hike-app/issues",
+                    },
+)
 
 st.title("52 Hike Challenge Data App")
 
@@ -26,7 +33,7 @@ with st.expander("How To Use This App"):
     st.markdown("`https://docs.google.com/spreadsheets/d/SHEETID/edit?usp=sharing`")
     st.markdown("Click the **Load Data** button.")
     st.markdown("##### Data Format")
-    st.markdown("The Google Sheet is expected to have the following columns and formats:")
+    st.markdown("The Google Sheet may have the following columns and formats:")
     df_sample = pd.DataFrame({'Hike #':[1],
                             'Location':['Cool Park'],
                             'Trail(s)':['Goat Alley'],
@@ -42,7 +49,11 @@ with st.expander("How To Use This App"):
                             'Season':['Winter']})
     st.dataframe(df_sample, hide_index=True)
     st.write(" ")
-    st.markdown("If you update the Google Sheet you can click the **Load Data** button again in the sidebar.")
+    st.markdown("However, your data doesn't neccesarily need to include all of these columns. For example, `Active Zone Minutes` is a Fitbit-specific metric that you won't have if you track your hikes with some other device or app. Plots will only be generated for those columns you include in your data's Google Sheet.")
+    st.markdown("You can include additional data columns in your Sheet. They just won't be used here in this app for plots.")
+    st.write(" ")
+    st.markdown("##### Update The Data")
+    st.markdown("If you update the Google Sheet you can click the **Load Data** button again in the sidebar to update the data here.")
 
 
 st.divider()
@@ -92,6 +103,8 @@ def bar_stats(loc, df, x, y):
     loc.pyplot(figb)
     return
 
+milestones = [[1,10], [11, 20], [21, 30], [31, 40], [41, 50], [51, 52]]
+
 if st.session_state.is_loaded:
     df_hike = st.session_state.df_hike
                     
@@ -132,12 +145,24 @@ if st.session_state.is_loaded:
     col2.pyplot(fig)
     st.markdown('------')
     if n_hike == 52:
-        st.header("Congrats! You have completed the 52 Hike Challenge!")
+        st.success("Congrats! You have completed the 52 Hike Challenge! \n If you haven't already, you can fill out the Finisher Form at: https://www.52hikechallenge.com/pages/finisher-form")
         st.balloons()
+        #st.markdown("If you haven't already, you can fill out the Finisher Form at: https://www.52hikechallenge.com/pages/finisher-form")
         st.markdown('------')
+    else:
+        # Check other milestones
+        n_mile = len(milestones)
+        for i in range(n_mile-1):
+            mile_i = milestones[i]
+            mile_i1 = milestones[i+1]
+            if (n_hike >= mile_i[1]) and (n_hike < mile_i1[1]):
+                out_text = "Congrats! You have completed the HIKES {}-{} milestone. \n If you haven't already, you can submit your milestone check-in by email at: https://www.52hikechallenge.com/pages/hikes-check-in".format(mile_i[0], mile_i[1])
+                st.success(out_text)
+                #st.markdown("If you haven't already, you can submit your milestone check-in by email at: https://www.52hikechallenge.com/pages/hikes-check-in")
+                st.markdown('------')
 
     with st.expander("Data table"):
-        st.write(df_hike)  
+        st.dataframe(df_hike, hide_index=True)  
 
     st.subheader("Hike Data and Stats")
     col1, col2 = st.columns(2)
