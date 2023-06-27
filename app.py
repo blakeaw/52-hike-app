@@ -4,9 +4,49 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import seaborn as sns
 
+
 st.title("52 Hike Challenge Data App")
 
-@st.cache_data
+cs1, cs2, cs3 = st.columns(3)
+
+# cs1.image("https://media.pagefly.io/file/get/52hiketm-final-medjpg-1546517799959.jpg",
+#            width=100)
+cs2.image("https://media.pagefly.io/file/get/52hiketm-final-medjpg-1546517799959.jpg",
+          width=100)
+
+
+# st.image("https://media.pagefly.io/file/get/52hiketm-final-medjpg-1546517799959.jpg",
+#            width=100)
+
+st.divider()
+
+with st.expander("How To Use This App"):
+
+    st.markdown("If it's not already open, open the Sidebar (little `>` in the top left corner) and input the sharing link for the Google Sheet with your hike data. The link should have the format:")
+    st.markdown("`https://docs.google.com/spreadsheets/d/SHEETID/edit?usp=sharing`")
+    st.markdown("Click the **Load Data** button.")
+    st.markdown("##### Data Format")
+    st.markdown("The Google Sheet is expected to have the following columns and formats:")
+    df_sample = pd.DataFrame({'Hike #':[1],
+                            'Location':['Cool Park'],
+                            'Trail(s)':['Goat Alley'],
+                            'Date':['01-01-2023'],
+                            'Distance (mi)':[1.0],
+                            'Elevation Gain (ft)':[100],
+                            'Duration (minutes)':[60],
+                            'Avg. Pace (minutes)':[60],
+                            'Steps':[1000],
+                            'Calories':[100],
+                            'Active Zone Minutes':[10],
+                            'AllTrails Rating':['Easy'],
+                            'Season':['Winter']})
+    st.dataframe(df_sample, hide_index=True)
+    st.write(" ")
+    st.markdown("If you update the Google Sheet you can click the **Load Data** button again in the sidebar.")
+
+
+st.divider()
+
 def load_gsheet(sharing):
     sheet_export = sheet_share.replace('/edit?usp=sharing', '/export?format=csv')
     df = pd.read_csv(sheet_export)
@@ -51,9 +91,7 @@ def bar_stats(loc, df, x, y):
 
 if st.session_state.is_loaded:
     df_hike = st.session_state.df_hike
-    if st.checkbox("Show data table"):
-
-        st.write(df_hike)                      
+                    
     n_hike = len(df_hike)
     t_ratio = '{}/52'.format(n_hike)
     #st.write(t_ratio)
@@ -95,6 +133,9 @@ if st.session_state.is_loaded:
         st.balloons()
         st.markdown('------')
 
+    with st.expander("Data table"):
+        st.write(df_hike)  
+
     st.subheader("Hike Data and Stats")
     col1, col2 = st.columns(2)
     x = 'Hike #'
@@ -107,9 +148,10 @@ if st.session_state.is_loaded:
     for y in expanded:
         with st.expander(y):
             bar_stats(st, df_hike, x, y)
-    # with st.expander("Distance"):
-    #     bar_stats(st, df_hike, x, 'Distance (mi)')
-    # with st.expander("Duration"):
-    #     bar_stats(st, df_hike, x, 'Duration (minutes)')
-    # with st.expander("Elevation gain"):
-    #         bar_stats(st, df_hike, x, 'Elevation Gain (ft)')
+
+    with st.expander('Pair plot - Difficulty'):
+        figp1 = sns.pairplot(df_hike.loc[:, 'Distance (mi)':], hue='AllTrails Rating')
+        st.pyplot(figp1)
+    with st.expander('Pair plot - Season'):
+        figp2 = sns.pairplot(df_hike.loc[:, 'Distance (mi)':], hue='Season')
+        st.pyplot(figp2)        
