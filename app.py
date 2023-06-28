@@ -201,12 +201,12 @@ if st.session_state.is_loaded:
                         hue='Season', size='Calories',
                         alpha=0.5, palette="colorblind", data=df_hike)
             st.pyplot(figp2) 
-    cols_need = pd.Series(['Distance (mi)', 'Duration (minutes)', 'Surface Type', 'Elevation'])
+    cols_need = pd.Series(['Distance (mi)', 'Duration (minutes)', 'Surface Type', 'Elevation Gain (ft)'])
     if cols_need.isin(df_hike.columns).all():            
         with st.expander('Relplot - Duration vs. Distance - Surface Type and Elevation'):
             #figp2 = sns.pairplot(df_hike.loc[:, 'Distance (mi)':], hue='Season')
             figp3 = sns.relplot(x='Distance (mi)', y='Duration (minutes)',
-                        hue='Surface Type', size='Elevation',
+                        hue='Surface Type', size='Elevation Gain (ft)',
                         alpha=0.5, palette="colorblind", data=df_hike)
             st.pyplot(figp3)             
     # with st.expander("Season Breakdown"):
