@@ -4,6 +4,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import seaborn as sns
 
+# Set custom Page Configs.
 st.set_page_config(page_title='52 Hike App',
                    page_icon=':hiking_boot:',
                    initial_sidebar_state="expanded",
@@ -16,15 +17,18 @@ st.title("52 Hike Challenge Data App")
 
 cs1, cs2, cs3 = st.columns(3)
 
-# cs1.image("https://media.pagefly.io/file/get/52hiketm-final-medjpg-1546517799959.jpg",
-#            width=100)
-cs2.image("https://media.pagefly.io/file/get/52hiketm-final-medjpg-1546517799959.jpg",
-          width=100)
-
+cs1.image("https://media.pagefly.io/file/get/52hiketm-final-medjpg-1546517799959.jpg",
+           width=100)
+#cs2.image("https://media.pagefly.io/file/get/52hiketm-final-medjpg-1546517799959.jpg",
+#          width=100)
+cs3.markdown(" A Streamlit web app by [@blakeaw](https://github.com/blakeaw)")
 
 # st.image("https://media.pagefly.io/file/get/52hiketm-final-medjpg-1546517799959.jpg",
 #            width=100)
 
+st.markdown("Welcome to my 52 Hike Challenge Data App powered by Streamlit. This app can load hike data from a Google Sheet via its sharing link. It will then highlight your progress, try to generate some graphs from data like the distance and duration, as well as highlight important 52 Hike Challenge milestones.")
+st.write(" ")
+st.markdown("Feel free to give it a try! You can see more detailed instructions in the **How To Use This App** dropdown below.")
 st.divider()
 
 with st.expander("How To Use This App"):
@@ -54,7 +58,9 @@ with st.expander("How To Use This App"):
     st.write(" ")
     st.markdown("##### Update The Data")
     st.markdown("If you update the Google Sheet you can click the **Load Data** button again in the sidebar to update the data here.")
-
+    st.write(" ")
+    st.markdown("##### Sample Data")
+    st.markdown("You can also try out the app using this sample Data Sheet: https://docs.google.com/spreadsheets/d/1xegpV0HuWQElmTdrAFjF2_Fcz2qxUo-QYucreuXXBcE/edit?usp=sharing")
 
 st.divider()
 
@@ -195,6 +201,14 @@ if st.session_state.is_loaded:
                         hue='Season', size='Calories',
                         alpha=0.5, palette="colorblind", data=df_hike)
             st.pyplot(figp2) 
+    cols_need = pd.Series(['Distance (mi)', 'Duration (minutes)', 'Surface Type', 'Elevation'])
+    if cols_need.isin(df_hike.columns).all():            
+        with st.expander('Relplot - Duration vs. Distance - Surface Type and Elevation'):
+            #figp2 = sns.pairplot(df_hike.loc[:, 'Distance (mi)':], hue='Season')
+            figp3 = sns.relplot(x='Distance (mi)', y='Duration (minutes)',
+                        hue='Surface Type', size='Elevation',
+                        alpha=0.5, palette="colorblind", data=df_hike)
+            st.pyplot(figp3)             
     # with st.expander("Season Breakdown"):
     #     figp3 = sns.catplot(data=df_hike, y="Season", color='slategrey', kind='bar')       
     #     st.pyplot(figp3)    
