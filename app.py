@@ -95,7 +95,8 @@ if "is_loaded" not in st.session_state:
     st.session_state.is_loaded = False
 if "df_hike" not in st.session_state:
     st.session_state.df_hike = None
-# if "has_changed" not in st.session_state:
+if "has_changed" not in st.session_state:
+    st.session_state.has_changed = False
 
 
 with st.sidebar:
@@ -111,6 +112,8 @@ with st.sidebar:
             if "Hike #" not in df_hike.columns:
                 hike_num = np.arange(len(df_hike)) + 1
                 df_hike["Hike #"] = hike_num
+            if st.session_state.is_loaded:
+                st.session_state.has_changed = df_hike.equals(st.session_state.df_hike)    
             st.session_state.is_loaded = True
             st.session_state.df_hike = df_hike
         except:
@@ -274,3 +277,5 @@ if st.session_state.is_loaded:
                 palette="colorblind",
             )
             st.pyplot(figrp)
+
+
